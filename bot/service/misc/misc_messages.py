@@ -1,25 +1,23 @@
 from aiogram import types
 
+from bot.database.models.groups import Groups
+from bot.keyboards import get_menu_key, get_fast_post_choose_channel_key
+
 
 async def start_message(message: types.Message):
 
     await message.answer(
         text="Главное меню",
-        reply_markup=types.InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    types.InlineKeyboardButton(
-                        text="Сделать пост", callback_data="make_post"
-                    ),
-                    types.InlineKeyboardButton(
-                        text="Запланировать пост",callback_data="plan_post"
-                    )
-                ],
-                [
-                    types.InlineKeyboardButton(
-                        text="Запланированные посты",callback_data="get_plan_posts"
-                    )
-                ]
-            ]
-        )
+        reply_markup=get_menu_key()
+    )
+
+
+async def fast_post_choose_channel(
+        message: types.Message,
+        groups: list[Groups]
+):
+
+    await message.answer(
+        text="Выберите канал для поста👇",
+        reply_markup=get_fast_post_choose_channel_key(groups)
     )
