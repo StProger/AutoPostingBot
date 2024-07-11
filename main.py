@@ -31,8 +31,7 @@ async def main():
     await bot.delete_webhook(drop_pending_updates=True)
     await logging.setup()
 
-
-    # BOT_SCHEDULER.start()
+    BOT_SCHEDULER.start()
 
     try:
 
