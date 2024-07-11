@@ -75,3 +75,24 @@ def get_fast_post_thread_id_key():
             ]
         ]
     )
+
+
+def get_fast_post_confirm_key():
+
+    return types.InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                types.InlineKeyboardButton(
+                    text="Да✅", callback_data="confirm_fp"
+                ),
+                types.InlineKeyboardButton(
+                    text="Нет❌", callback_data="unconfirm_fp"
+                )
+            ],
+            [
+                types.InlineKeyboardButton(
+                    text="Меню", callback_data="menu"
+                )
+            ]
+        ]
+    )
