@@ -11,6 +11,7 @@ from bot import logging
 from bot.database.engine import db
 from bot.database.models.groups import Groups
 from bot.database.models.admins import Admins
+from bot.database.models.tasks_posts import TasksPosts
 from bot.filters import init_filters
 
 import asyncio
@@ -46,5 +47,5 @@ async def main():
 
 if __name__ == '__main__':
 
-    db.create_tables([Groups, Admins])
+    db.create_tables([Groups, Admins, TasksPosts])
     asyncio.run(main())
