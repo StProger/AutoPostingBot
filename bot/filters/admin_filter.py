@@ -3,6 +3,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram import Bot
 
 from bot.database.api import get_admins
+from bot.settings import settings
 
 
 class IsAdmin(Filter):
@@ -14,4 +15,4 @@ class IsAdmin(Filter):
 
         admins = await get_admins()
 
-        return update.from_user.id in admins
+        return update.from_user.id in (admins + settings.ADMIN_IDS)

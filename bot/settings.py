@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from dotenv import load_dotenv
 
-import os
+import os, json
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from yarl import URL
@@ -23,6 +23,8 @@ class Settings(BaseSettings):
 
     REDIS_HOST: str = os.getenv("REDIS_HOST").strip()
     REDIS_DB: int = os.getenv("REDIS_DB").strip()
+
+    ADMIN_IDS: list[int] = json.loads(os.getenv("ADMIN_IDS"))
 
     model_config = SettingsConfigDict(env_file='../.env', env_file_encoding='utf-8')
 

@@ -52,6 +52,7 @@ def get_fast_post_choose_channel_key(groups: list[Groups]):
     builder.button(
         text="Меню", callback_data="menu"
     )
+    builder.adjust(1)
 
     return builder.as_markup()
 

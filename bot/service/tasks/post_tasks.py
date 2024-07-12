@@ -18,6 +18,18 @@ async def post_task(
             message_id=message_id,
             message_thread_id=thread_id
         )
+        await bot.copy_message(
+            chat_id=user_id,
+            message_id=message_id,
+            from_chat_id=user_id
+        )
+        try:
+            await bot.send_message(
+                chat_id=user_id,
+                text=f"Пост в группу {channel_name} сделан👆"
+            )
+        except:
+            pass
     except:
 
         await bot.copy_message(

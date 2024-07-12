@@ -2,11 +2,14 @@ from aiogram import Router, F, types
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 
+import asyncio
+
 from bot.database.models.groups import Groups
 from bot.keyboards import button_menu, get_fast_post_confirm_key
 from bot.service.misc.misc_messages import fast_post_choose_channel, fast_post_ask_thread_id, fast_post_get_thread_id, \
     fast_post_get_template
 from bot.service.redis_serv.user import get_msg_to_delete
+from bot.service.tasks.post_tasks import post_task
 
 router = Router()
 
@@ -73,13 +76,13 @@ async def get_template_post(message: types.Message, state: FSMContext):
         await state.update_data(
             thread_id=int(thread_id)
         )
-        try:
-            await message.bot.delete_message(
-                chat_id=message.chat.id,
-                message_id=(await get_msg_to_delete(user_id=message.from_user.id))
-            )
-        except:
-            pass
+        # try:
+        #     await message.bot.delete_message(
+        #         chat_id=message.chat.id,
+        #         message_id=(await get_msg_to_delete(user_id=message.from_user.id))
+        #     )
+        # except:
+        #     pass
 
         await fast_post_get_template(message)
 
@@ -93,7 +96,6 @@ async def accept_fast_post(message: types.Message, state: FSMContext):
         message_post_id=message.message_id,
         reply_markup=message.reply_markup.dict() if message.reply_markup else None
     )
-
     await message.bot.copy_message(
         chat_id=message.chat.id,
         from_chat_id=message.chat.id,
@@ -106,4 +108,35 @@ async def accept_fast_post(message: types.Message, state: FSMContext):
 
 Сделать пост?""",
         reply_markup=get_fast_post_confirm_key()
+    )
+
+
+# Отказ от поста
+@router.callback_query(StateFilter("make_post:access_fast_post"), F.data == "unconfirm_fp")
+async def get_new_template_fast_post(callback: types.CallbackQuery, state: FSMContext):
+
+    await state.set_state("make_post:get_post_template")
+    await callback.message.delete()
+    await fast_post_get_template(callback.message)
+
+
+@router.callback_query(StateFilter("make_post:access_fast_post"), F.data == "confirm_fp")
+async def make_fast_post(callback: types.CallbackQuery, state: FSMContext):
+
+    data_state = await state.get_data()
+
+    asyncio.create_task(
+        post_task(
+            channel_name=data_state["group_name"],
+            channel_id=data_state["group_id"],
+            thread_id=data_state["thread_id"],
+            message_id=data_state["message_post_id"],
+            user_id=callback.from_user.id,
+            bot=callback.bot
+        )
+    )
+    await callback.message.delete()
+    await callback.message.answer(
+        text="Пост скоро опубликуется.",
+        reply_markup=button_menu()
     )

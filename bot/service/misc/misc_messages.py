@@ -43,10 +43,10 @@ async def fast_post_get_thread_id(
         reply_markup=button_menu()
     )
 
-    await set_msg_to_delete(
-        user_id=message.from_user.id,
-        message_id=mes_.message_id
-    )
+    # await set_msg_to_delete(
+    #     user_id=message.from_user.id,
+    #     message_id=mes_.message_id
+    # )
 
 
 async def fast_post_get_template(message: types.Message):
