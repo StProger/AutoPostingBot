@@ -46,7 +46,7 @@ def get_fast_post_choose_channel_key(groups: list[Groups]):
     for group in groups:
 
         builder.button(
-            text=group.name, callback_data=f"channel_fp_{group.id}"
+            text=group.name, callback_data=f"channel_p_{group.id}"
         )
 
     builder.button(
@@ -63,10 +63,10 @@ def get_fast_post_thread_id_key():
         inline_keyboard=[
             [
                 types.InlineKeyboardButton(
-                    text="Да✅", callback_data="fast_post_with_thread_id"
+                    text="Да✅", callback_data="with_thread_id"
                 ),
                 types.InlineKeyboardButton(
-                    text="Нет❌", callback_data="fast_post_no_thread_id"
+                    text="Нет❌", callback_data="no_thread_id"
                 )
             ],
             [
@@ -93,6 +93,25 @@ def get_fast_post_confirm_key():
             [
                 types.InlineKeyboardButton(
                     text="Меню", callback_data="menu"
+                )
+            ]
+        ]
+    )
+
+
+def select_time_post(selected_hours: int):
+
+    return types.InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                types.InlineKeyboardButton(
+                    text="-", callback_data="minus_hour"
+                ),
+                types.InlineKeyboardButton(
+                    text=str(selected_hours), callback_data="none"
+                ),
+                types.InlineKeyboardButton(
+                    text="+", callback_data="plus_hour"
                 )
             ]
         ]

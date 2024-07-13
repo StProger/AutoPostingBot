@@ -13,7 +13,7 @@ async def start_message(message: types.Message):
     )
 
 
-async def fast_post_choose_channel(
+async def choose_channel_message(
         message: types.Message,
         groups: list[Groups]
 ):
@@ -24,7 +24,7 @@ async def fast_post_choose_channel(
     )
 
 
-async def fast_post_ask_thread_id(
+async def ask_thread_id_message(
         message: types.Message
 ):
 
@@ -34,7 +34,7 @@ async def fast_post_ask_thread_id(
     )
 
 
-async def fast_post_get_thread_id(
+async def get_thread_id_message(
         message: types.Message
 ):
 
@@ -49,9 +49,18 @@ async def fast_post_get_thread_id(
     # )
 
 
-async def fast_post_get_template(message: types.Message):
+async def get_template_message(message: types.Message):
 
     await message.answer(
         text="Отправьте пост.",
         reply_markup=button_menu()
     )
+
+async def get_time_public_post_message(message: types.Message):
+
+    await message.answer(
+        text="Через сколько часов опубликовать пост?",
+        reply_markup=...
+    )
+
+

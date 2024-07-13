@@ -6,8 +6,8 @@ import asyncio
 
 from bot.database.models.groups import Groups
 from bot.keyboards import button_menu, get_fast_post_confirm_key
-from bot.service.misc.misc_messages import fast_post_choose_channel, fast_post_ask_thread_id, fast_post_get_thread_id, \
-    fast_post_get_template
+from bot.service.misc.misc_messages import choose_channel_message, fast_post_get_thread_id, \
+    ask_thread_id_message, get_template_message, get_thread_id_message
 from bot.service.redis_serv.user import get_msg_to_delete
 from bot.service.tasks.post_tasks import post_task
 
@@ -21,10 +21,10 @@ async def choose_channel(callback: types.CallbackQuery, state: FSMContext):
     groups = Groups.select()
 
     await callback.message.delete()
-    await fast_post_choose_channel(callback.message, groups)
+    await choose_channel_message(callback.message, groups)
 
 
-@router.callback_query(StateFilter("make_post:choose_channel"), F.data.startswith("channel_fp_"))
+@router.callback_query(StateFilter("make_post:choose_channel"), F.data.startswith("channel_p_"))
 async def ask_thread_id(callback: types.CallbackQuery, state: FSMContext):
 
     await state.set_state("make_post:thread_id")
@@ -37,10 +37,10 @@ async def ask_thread_id(callback: types.CallbackQuery, state: FSMContext):
         group_name=group.name
     )
 
-    await fast_post_ask_thread_id(callback.message)
+    await ask_thread_id_message(callback.message)
 
 
-@router.callback_query(StateFilter("make_post:thread_id"), F.data == "fast_post_no_thread_id")
+@router.callback_query(StateFilter("make_post:thread_id"), F.data == "no_thread_id")
 async def get_template_post(callback: types.CallbackQuery, state: FSMContext):
 
     await state.set_state("make_post:get_post_template")
@@ -48,15 +48,15 @@ async def get_template_post(callback: types.CallbackQuery, state: FSMContext):
         thread_id=None
     )
     await callback.message.delete()
-    await fast_post_get_template(callback.message)
+    await get_template_message(callback.message)
 
 
-@router.callback_query(StateFilter("make_post:thread_id"), F.data == "fast_post_with_thread_id")
+@router.callback_query(StateFilter("make_post:thread_id"), F.data == "with_thread_id")
 async def get_thread_id(callback: types.CallbackQuery, state: FSMContext):
 
     await state.set_state("make_post:get_thread_id")
     await callback.message.delete()
-    await fast_post_get_thread_id(callback.message)
+    await get_thread_id_message(callback.message)
 
 
 @router.message(StateFilter("make_post:get_thread_id"))
@@ -84,7 +84,7 @@ async def get_template_post(message: types.Message, state: FSMContext):
         # except:
         #     pass
 
-        await fast_post_get_template(message)
+        await get_template_message(message)
 
 
 @router.message(StateFilter("make_post:get_post_template"))
@@ -117,7 +117,7 @@ async def get_new_template_fast_post(callback: types.CallbackQuery, state: FSMCo
 
     await state.set_state("make_post:get_post_template")
     await callback.message.delete()
-    await fast_post_get_template(callback.message)
+    await get_template_message(callback.message)
 
 
 @router.callback_query(StateFilter("make_post:access_fast_post"), F.data == "confirm_fp")
