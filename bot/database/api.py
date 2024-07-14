@@ -1,5 +1,6 @@
 from bot.database.models.admins import Admins
 from bot.database.models.groups import Groups
+from bot.database.models.tasks_posts import TasksPosts
 
 
 async def get_admins():
@@ -29,4 +30,29 @@ async def add_group_to_db(group_name: str, group_id: int):
 async def delete_group_from_db(group_id: int):
 
     query = Groups.delete().where(Groups.group_id == group_id)
+    query.execute()
+
+async def add_task(
+        task_id,
+        channel_name,
+        channel_id,
+        thread_id,
+        message_id,
+        user_id
+):
+
+    query = TasksPosts.insert(
+        task_id=task_id,
+        channel_name=channel_name,
+        channel_id=channel_id,
+        thread_id=thread_id,
+        message_id=message_id,
+        user_id=user_id
+    )
+    query.execute()
+
+
+async def delete_task(task_id):
+
+    query = TasksPosts.delete().where(TasksPosts.task_id == task_id)
     query.execute()

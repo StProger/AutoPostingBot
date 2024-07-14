@@ -1,11 +1,17 @@
+from datetime import datetime, timedelta
+
 from aiogram import Router, F, types
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 
+from bot.database.api import add_task
 from bot.database.models.groups import Groups
 from bot.keyboards import button_menu, get_fast_post_confirm_key
 from bot.service.misc.misc_messages import choose_channel_message, ask_thread_id_message, get_template_message, \
     get_thread_id_message, get_time_public_post_message
+
+from bot.settings import BOT_SCHEDULER
+from bot.service.tasks.post_tasks import post_task
 
 router = Router()
 
@@ -94,6 +100,16 @@ async def get_template_post(callback: types.CallbackQuery, state: FSMContext):
 
     await state.set_state("plan_post:get_post_template")
 
+    data_state = await state.get_data()
+
+    selected_time = data_state["selected_time"]
+
+    date = (datetime.utcnow() + timedelta(hours=selected_time)).strftime('%Y-%m-%d %H:%M:%S')
+
+    await state.update_data(
+        run_date=date
+    )
+
     await callback.message.delete()
     await get_template_message(callback.message)
 
@@ -119,4 +135,50 @@ async def accept_fast_post(message: types.Message, state: FSMContext):
 
     Запланировать пост?""",
         reply_markup=get_fast_post_confirm_key()
+    )
+
+
+# Отказ от поста
+@router.callback_query(StateFilter("plan_post:access_post"), F.data == "unconfirm_fp")
+async def get_new_template_fast_post(callback: types.CallbackQuery, state: FSMContext):
+
+    await state.set_state("plan_post:get_post_template")
+    await callback.message.delete()
+    await get_template_message(callback.message)
+
+
+# Принятие поста
+@router.callback_query(StateFilter("plan_post:access_post"), F.data == "confirm_fp")
+async def make_fast_post(callback: types.CallbackQuery, state: FSMContext):
+
+    data_state = await state.get_data()
+
+    new_post_job = BOT_SCHEDULER.add_job(
+        func=post_task,
+        trigger="date",
+        run_date=data_state["run_date"],
+        next_run_time=data_state["run_date"],
+        args=(
+            data_state["group_name"],
+            data_state["group_id"],
+            data_state["thread_id"],
+            data_state["message_post_id"],
+            callback.from_user.id,
+            callback.bot
+        )
+    )
+
+    await add_task(
+        new_post_job.id,
+        data_state["group_name"],
+        data_state["group_id"],
+        data_state["thread_id"],
+        data_state["message_post_id"],
+        callback.from_user.id
+    )
+    await state.clear()
+    await callback.message.delete()
+    await callback.message.answer(
+        text=f"Пост запланирован на {data_state['run_date']}",
+        reply_markup=button_menu()
     )
