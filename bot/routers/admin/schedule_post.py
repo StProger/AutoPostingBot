@@ -3,11 +3,12 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 
 from bot.database.models.groups import Groups
-from bot.keyboards import button_menu
+from bot.keyboards import button_menu, get_fast_post_confirm_key
 from bot.service.misc.misc_messages import choose_channel_message, ask_thread_id_message, get_template_message, \
-    get_thread_id_message
+    get_thread_id_message, get_time_public_post_message
 
 router = Router()
+
 
 @router.callback_query(F.data == "plan_post")
 async def choose_channel(callback: types.CallbackQuery, state: FSMContext):
@@ -37,13 +38,15 @@ async def ask_thread_id(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(StateFilter("plan_post:thread_id"), F.data == "no_thread_id")
-async def get_template_post(callback: types.CallbackQuery, state: FSMContext):
+async def get_time_post(callback: types.CallbackQuery, state: FSMContext):
 
-    await state.set_state("plan_post:get_post_template")
+    await state.set_state("plan_post:get_time_post")
     await state.update_data(
-        thread_id=None
+        thread_id=None,
+        selected_time=0
     )
     await callback.message.delete()
+    await get_time_public_post_message(callback.message)
     # await get_template_message(callback.message)
 
 
@@ -56,9 +59,9 @@ async def get_thread_id(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.message(StateFilter("plan_post:get_thread_id"))
-async def get_template_post(message: types.Message, state: FSMContext):
+async def get_time_post(message: types.Message, state: FSMContext):
 
-    await state.set_state("plan_post:get_post_template")
+    await state.set_state("plan_post:get_time_post")
     thread_id = message.text
 
     if not thread_id.isdigit():
@@ -70,7 +73,8 @@ async def get_template_post(message: types.Message, state: FSMContext):
     else:
 
         await state.update_data(
-            thread_id=int(thread_id)
+            thread_id=int(thread_id),
+            selected_time=0
         )
         # try:
         #     await message.bot.delete_message(
@@ -80,4 +84,39 @@ async def get_template_post(message: types.Message, state: FSMContext):
         # except:
         #     pass
 
-        await get_template_message(message)
+        await get_time_public_post_message(message)
+
+        # await get_template_message(message)
+
+
+@router.callback_query(StateFilter("plan_post:get_time_post"), F.data == "accept_time")
+async def get_template_post(callback: types.CallbackQuery, state: FSMContext):
+
+    await state.set_state("plan_post:get_post_template")
+
+    await callback.message.delete()
+    await get_template_message(callback.message)
+
+
+@router.message(StateFilter("plan_post:get_post_template"))
+async def accept_fast_post(message: types.Message, state: FSMContext):
+
+    await state.set_state("plan_post:access_post")
+
+    await state.update_data(
+        message_post_id=message.message_id,
+        reply_markup=message.reply_markup.dict() if message.reply_markup else None
+    )
+    await message.bot.copy_message(
+        chat_id=message.chat.id,
+        from_chat_id=message.chat.id,
+        message_id=message.message_id
+    )
+
+    await message.answer(
+        f"""
+    ☝️Вот так выглядит ваш пост.
+
+    Запланировать пост?""",
+        reply_markup=get_fast_post_confirm_key()
+    )

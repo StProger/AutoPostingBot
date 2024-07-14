@@ -1,3 +1,5 @@
+from operator import contains
+
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -99,7 +101,7 @@ def get_fast_post_confirm_key():
     )
 
 
-def select_time_post(selected_hours: int):
+def select_time_post(selected_hours: int = 0):
 
     return types.InlineKeyboardMarkup(
         inline_keyboard=[
@@ -112,6 +114,16 @@ def select_time_post(selected_hours: int):
                 ),
                 types.InlineKeyboardButton(
                     text="+", callback_data="plus_hour"
+                )
+            ],
+            [
+                types.InlineKeyboardButton(
+                    text="Подтвердить время", callback_data="accept_time"
+                )
+            ],
+            [
+                types.InlineKeyboardButton(
+                    text="Меню", callback_data="menu"
                 )
             ]
         ]

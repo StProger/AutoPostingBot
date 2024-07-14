@@ -6,7 +6,7 @@ import asyncio
 
 from bot.database.models.groups import Groups
 from bot.keyboards import button_menu, get_fast_post_confirm_key
-from bot.service.misc.misc_messages import choose_channel_message, fast_post_get_thread_id, \
+from bot.service.misc.misc_messages import choose_channel_message, \
     ask_thread_id_message, get_template_message, get_thread_id_message
 from bot.service.redis_serv.user import get_msg_to_delete
 from bot.service.tasks.post_tasks import post_task

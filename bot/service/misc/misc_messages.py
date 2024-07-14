@@ -1,7 +1,8 @@
 from aiogram import types
 
 from bot.database.models.groups import Groups
-from bot.keyboards import get_menu_key, get_fast_post_choose_channel_key, get_fast_post_thread_id_key, button_menu
+from bot.keyboards import get_menu_key, get_fast_post_choose_channel_key, get_fast_post_thread_id_key, button_menu, \
+    select_time_post
 from bot.service.redis_serv.user import set_msg_to_delete
 
 
@@ -56,11 +57,12 @@ async def get_template_message(message: types.Message):
         reply_markup=button_menu()
     )
 
+
 async def get_time_public_post_message(message: types.Message):
 
     await message.answer(
         text="Через сколько часов опубликовать пост?",
-        reply_markup=...
+        reply_markup=select_time_post()
     )
 
 
