@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from aiogram import Router, F, types
 from aiogram.filters import StateFilter
@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from bot.database.api import add_task
 from bot.database.models.groups import Groups
-from bot.keyboards import button_menu, get_fast_post_confirm_key
+from bot.keyboards import button_menu, get_post_confirm_key
 from bot.service.misc.misc_messages import choose_channel_message, ask_thread_id_message, get_template_message, \
     get_thread_id_message, get_time_public_post_message
 
@@ -104,7 +104,12 @@ async def get_template_post(callback: types.CallbackQuery, state: FSMContext):
 
     selected_time = data_state["selected_time"]
 
-    date = (datetime.utcnow() + timedelta(hours=selected_time)).strftime('%Y-%m-%d %H:%M:%S')
+    if selected_time == 0:
+
+        await callback.answer("Вы не выбрали время.")
+        return
+
+    date = (datetime.now(timezone.utc) + timedelta(hours=selected_time)).strftime('%Y-%m-%d %H:%M:%S')
 
     await state.update_data(
         run_date=date
@@ -118,7 +123,7 @@ async def get_template_post(callback: types.CallbackQuery, state: FSMContext):
 async def accept_fast_post(message: types.Message, state: FSMContext):
 
     await state.set_state("plan_post:access_post")
-
+    data_state = await state.get_data()
     await state.update_data(
         message_post_id=message.message_id,
         reply_markup=message.reply_markup.dict() if message.reply_markup else None
@@ -126,15 +131,20 @@ async def accept_fast_post(message: types.Message, state: FSMContext):
     await message.bot.copy_message(
         chat_id=message.chat.id,
         from_chat_id=message.chat.id,
-        message_id=message.message_id
+        message_id=message.message_id,
+        reply_markup=message.reply_markup.dict if message.reply_markup else None
     )
 
     await message.answer(
         f"""
     ☝️Вот так выглядит ваш пост.
-
+    
+    <b>Название канала</b>: {data_state["group_name"]}
+    
+    <b>Время публикации поста</b>: {data_state["run_date"]}
+    
     Запланировать пост?""",
-        reply_markup=get_fast_post_confirm_key()
+        reply_markup=get_post_confirm_key()
     )
 
 
@@ -163,6 +173,7 @@ async def make_fast_post(callback: types.CallbackQuery, state: FSMContext):
             data_state["group_id"],
             data_state["thread_id"],
             data_state["message_post_id"],
+            data_state["reply_markup"],
             callback.from_user.id,
             callback.bot
         )

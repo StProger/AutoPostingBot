@@ -5,6 +5,7 @@ from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.database.models.groups import Groups
+from bot.database.models.tasks_posts import TasksPosts
 
 
 def button_menu():
@@ -80,7 +81,7 @@ def get_fast_post_thread_id_key():
     )
 
 
-def get_fast_post_confirm_key():
+def get_post_confirm_key():
 
     return types.InlineKeyboardMarkup(
         inline_keyboard=[
@@ -128,3 +129,29 @@ def select_time_post(selected_hours: int = 0):
             ]
         ]
     )
+
+
+def lists_posts_key(posts: list[TasksPosts]):
+
+    builder = InlineKeyboardBuilder()
+
+    for index, post in enumerate(posts, start=1):
+
+        if index % 4 == 0:
+
+            builder.row(
+                types.InlineKeyboardButton(
+                    text=str(index), callback_data=f"get_post_{post.id}"
+                )
+            )
+        else:
+
+            builder.button(text=str(index), callback_data=f"get_post_{post.id}")
+
+        builder.row(
+            types.InlineKeyboardButton(
+                text="Меню", callback_data="menu"
+            )
+        )
+
+        return builder.as_markup()

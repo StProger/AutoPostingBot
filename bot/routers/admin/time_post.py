@@ -1,7 +1,7 @@
 from aiogram import types, F, Router
 from aiogram.fsm.context import FSMContext
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from bot.keyboards import select_time_post
 
@@ -33,7 +33,7 @@ async def change_time_post(callback: types.CallbackQuery, state: FSMContext):
         await state.update_data(
             selected_time=selected_time
         )
-    date = datetime.utcnow() + timedelta(hours=selected_time)
+    date = datetime.now(timezone.utc) + timedelta(hours=selected_time)
     await callback.message.edit_text(
         text=f"Через сколько часов опубликовать пост?\n"
              f"Пост опубликуется <code>{date.strftime('%Y-%m-%d %H:%M:%S')}</code>",

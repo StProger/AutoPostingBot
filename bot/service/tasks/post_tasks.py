@@ -6,6 +6,7 @@ async def post_task(
         channel_id: int,
         thread_id: int | None,
         message_id: int,
+        reply_markup,
         user_id: int,
         bot: Bot
 ):
@@ -16,12 +17,14 @@ async def post_task(
             chat_id=channel_id,
             from_chat_id=user_id,
             message_id=message_id,
-            message_thread_id=thread_id
+            message_thread_id=thread_id,
+            reply_markup=reply_markup
         )
         await bot.copy_message(
             chat_id=user_id,
             message_id=message_id,
-            from_chat_id=user_id
+            from_chat_id=user_id,
+            reply_markup=reply_markup
         )
         try:
             await bot.send_message(

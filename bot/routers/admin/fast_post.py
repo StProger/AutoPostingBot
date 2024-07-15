@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 import asyncio
 
 from bot.database.models.groups import Groups
-from bot.keyboards import button_menu, get_fast_post_confirm_key
+from bot.keyboards import button_menu, get_post_confirm_key
 from bot.service.misc.misc_messages import choose_channel_message, \
     ask_thread_id_message, get_template_message, get_thread_id_message
 from bot.service.redis_serv.user import get_msg_to_delete
@@ -91,7 +91,7 @@ async def get_template_post(message: types.Message, state: FSMContext):
 async def accept_fast_post(message: types.Message, state: FSMContext):
 
     await state.set_state("make_post:access_fast_post")
-
+    data_state = await state.get_data()
     await state.update_data(
         message_post_id=message.message_id,
         reply_markup=message.reply_markup.dict() if message.reply_markup else None
@@ -99,15 +99,16 @@ async def accept_fast_post(message: types.Message, state: FSMContext):
     await message.bot.copy_message(
         chat_id=message.chat.id,
         from_chat_id=message.chat.id,
-        message_id=message.message_id
+        message_id=message.message_id,
+        reply_markup=message.reply_markup.dict() if message.reply_markup else None
     )
 
     await message.answer(
         f"""
 ☝️Вот так выглядит ваш пост.
-
+Название канала: {data_state["group_name"]}
 Сделать пост?""",
-        reply_markup=get_fast_post_confirm_key()
+        reply_markup=get_post_confirm_key()
     )
 
 
