@@ -32,12 +32,14 @@ async def delete_group_from_db(group_id: int):
     query = Groups.delete().where(Groups.group_id == group_id)
     query.execute()
 
+
 async def add_task(
         task_id,
         channel_name,
         channel_id,
         thread_id,
         message_id,
+        reply_markup,
         user_id
 ):
 
@@ -47,6 +49,7 @@ async def add_task(
         channel_id=channel_id,
         thread_id=thread_id,
         message_id=message_id,
+        reply_markup=reply_markup,
         user_id=user_id
     )
     query.execute()

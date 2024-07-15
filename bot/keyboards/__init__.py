@@ -155,3 +155,21 @@ def lists_posts_key(posts: list[TasksPosts]):
         )
 
         return builder.as_markup()
+
+
+def cancel_plan_post_key(post: TasksPosts):
+
+    return types.InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                types.InlineKeyboardButton(
+                    text="Отменить пост", callback_data=f"cancel_sp_{post.id}"
+                )
+            ],
+            [
+                types.InlineKeyboardButton(
+                    text="Назад", callback_data="get_plan_posts"
+                )
+            ]
+        ]
+    )

@@ -185,6 +185,7 @@ async def make_fast_post(callback: types.CallbackQuery, state: FSMContext):
         data_state["group_id"],
         data_state["thread_id"],
         data_state["message_post_id"],
+        str(data_state["reply_markup"]),
         callback.from_user.id
     )
     await state.clear()
