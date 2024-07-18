@@ -19,9 +19,9 @@ import asyncio
 
 async def main():
 
-    # storage = RedisStorage.from_url(settings.fsm_redis_url)
+    storage = RedisStorage.from_url(settings.fsm_redis_url)
 
-    dp = Dispatcher(storage=MemoryStorage())
+    dp = Dispatcher(storage=storage)
 
     # dp.message.filter(IsAdmin())
     # dp.callback_query.filter(IsAdmin())

@@ -34,7 +34,6 @@ async def delete_group_from_db(group_id: int):
 
 
 async def add_task(
-        task_id,
         channel_name,
         channel_id,
         thread_id,
@@ -44,7 +43,6 @@ async def add_task(
 ):
 
     query = TasksPosts.insert(
-        task_id=task_id,
         channel_name=channel_name,
         channel_id=channel_id,
         thread_id=thread_id,
@@ -52,10 +50,16 @@ async def add_task(
         reply_markup=reply_markup,
         user_id=user_id
     )
+    return query.execute()
+
+
+async def update_task(task_id: int, job_id: str):
+
+    query = TasksPosts.update(task_id=job_id).where(TasksPosts.id == task_id)
     query.execute()
 
 
 async def delete_task(task_id):
 
-    query = TasksPosts.delete().where(TasksPosts.task_id == task_id)
+    query = TasksPosts.delete().where(TasksPosts.id == task_id)
     query.execute()

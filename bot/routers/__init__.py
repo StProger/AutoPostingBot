@@ -6,6 +6,7 @@ from bot.routers import start
 from bot.routers.chat_event import join, left
 from bot.routers.admin import time_post
 from bot.routers.admin import list_tasks
+from bot.routers.admin import schedule_post
 
 
 def register_all_routers(dp: Dispatcher):
@@ -13,6 +14,7 @@ def register_all_routers(dp: Dispatcher):
     dp.include_router(add_admin.router)
     dp.include_router(delete_admin.router)
     dp.include_router(fast_post.router)
+    dp.include_router(schedule_post.router)
     dp.include_router(start.router)
     dp.include_router(join.router)
     dp.include_router(left.router)

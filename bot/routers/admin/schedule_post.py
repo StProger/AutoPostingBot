@@ -1,17 +1,21 @@
 from datetime import datetime, timedelta, timezone
 
+import pytz
+
 from aiogram import Router, F, types
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 
-from bot.database.api import add_task
+from bot.database.api import add_task, update_task
 from bot.database.models.groups import Groups
 from bot.keyboards import button_menu, get_post_confirm_key
 from bot.service.misc.misc_messages import choose_channel_message, ask_thread_id_message, get_template_message, \
     get_thread_id_message, get_time_public_post_message
+from bot.service.redis_serv.user import get_msg_to_delete
+from bot.service.tasks.post_schedule_tasks import post_schedule_task
 
 from bot.settings import BOT_SCHEDULER
-from bot.service.tasks.post_tasks import post_task
+
 
 router = Router()
 
@@ -67,28 +71,28 @@ async def get_thread_id(callback: types.CallbackQuery, state: FSMContext):
 @router.message(StateFilter("plan_post:get_thread_id"))
 async def get_time_post(message: types.Message, state: FSMContext):
 
-    await state.set_state("plan_post:get_time_post")
     thread_id = message.text
-
     if not thread_id.isdigit():
 
         await message.answer(
             text="ID должен содержать только цифры.",
             reply_markup=button_menu()
         )
+
     else:
 
+        await state.set_state("plan_post:get_time_post")
         await state.update_data(
             thread_id=int(thread_id),
             selected_time=0
         )
-        # try:
-        #     await message.bot.delete_message(
-        #         chat_id=message.chat.id,
-        #         message_id=(await get_msg_to_delete(user_id=message.from_user.id))
-        #     )
-        # except:
-        #     pass
+        try:
+            await message.bot.delete_message(
+                chat_id=message.chat.id,
+                message_id=(await get_msg_to_delete(user_id=message.from_user.id))
+            )
+        except:
+            pass
 
         await get_time_public_post_message(message)
 
@@ -109,7 +113,7 @@ async def get_template_post(callback: types.CallbackQuery, state: FSMContext):
         await callback.answer("Вы не выбрали время.")
         return
 
-    date = (datetime.now(timezone.utc) + timedelta(hours=selected_time)).strftime('%Y-%m-%d %H:%M:%S')
+    date = (datetime.now(pytz.timezone('Europe/Moscow')) + timedelta(hours=selected_time)).strftime('%Y-%m-%d %H:%M:%S')
 
     await state.update_data(
         run_date=date
@@ -137,13 +141,13 @@ async def accept_fast_post(message: types.Message, state: FSMContext):
 
     await message.answer(
         f"""
-    ☝️Вот так выглядит ваш пост.
+☝️Вот так выглядит ваш пост.
     
-    <b>Название канала</b>: {data_state["group_name"]}
+<b>Название канала</b>: {data_state["group_name"]}
     
-    <b>Время публикации поста</b>: {data_state["run_date"]}
+<b>Время публикации поста</b>: {data_state["run_date"]}
     
-    Запланировать пост?""",
+Запланировать пост?""",
         reply_markup=get_post_confirm_key()
     )
 
@@ -159,12 +163,21 @@ async def get_new_template_fast_post(callback: types.CallbackQuery, state: FSMCo
 
 # Принятие поста
 @router.callback_query(StateFilter("plan_post:access_post"), F.data == "confirm_fp")
-async def make_fast_post(callback: types.CallbackQuery, state: FSMContext):
+async def make_plan_post(callback: types.CallbackQuery, state: FSMContext):
 
     data_state = await state.get_data()
 
+    new_task: int = await add_task(
+        data_state["group_name"],
+        data_state["group_id"],
+        data_state["thread_id"],
+        data_state["message_post_id"],
+        str(data_state["reply_markup"]),
+        callback.from_user.id
+    )
+
     new_post_job = BOT_SCHEDULER.add_job(
-        func=post_task,
+        func=post_schedule_task,
         trigger="date",
         run_date=data_state["run_date"],
         next_run_time=data_state["run_date"],
@@ -175,22 +188,16 @@ async def make_fast_post(callback: types.CallbackQuery, state: FSMContext):
             data_state["message_post_id"],
             data_state["reply_markup"],
             callback.from_user.id,
-            callback.bot
+            callback.bot,
+            new_task
         )
     )
 
-    await add_task(
-        new_post_job.id,
-        data_state["group_name"],
-        data_state["group_id"],
-        data_state["thread_id"],
-        data_state["message_post_id"],
-        str(data_state["reply_markup"]),
-        callback.from_user.id
-    )
+    await update_task(new_task, new_post_job.id)
+
     await state.clear()
     await callback.message.delete()
     await callback.message.answer(
-        text=f"Пост запланирован на {data_state['run_date']}",
+        text=f"Пост запланирован на\n{data_state['run_date']}",
         reply_markup=button_menu()
     )

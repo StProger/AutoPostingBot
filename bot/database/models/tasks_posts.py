@@ -10,7 +10,7 @@ class TasksPosts(BaseModel):
 
     id = BigIntegerField(primary_key=True)
 
-    task_id = TextField(null=False)
+    task_id = TextField(null=True, default=None)
     channel_name = TextField(null=False)
     channel_id = BigIntegerField()
     thread_id = BigIntegerField(null=True)

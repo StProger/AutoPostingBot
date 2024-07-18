@@ -148,13 +148,13 @@ def lists_posts_key(posts: list[TasksPosts]):
 
             builder.button(text=str(index), callback_data=f"get_post_{post.id}")
 
-        builder.row(
-            types.InlineKeyboardButton(
-                text="Меню", callback_data="menu"
-            )
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Меню", callback_data="menu"
         )
+    )
 
-        return builder.as_markup()
+    return builder.as_markup()
 
 
 def cancel_plan_post_key(post: TasksPosts):

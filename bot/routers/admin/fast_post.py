@@ -76,13 +76,13 @@ async def get_template_post(message: types.Message, state: FSMContext):
         await state.update_data(
             thread_id=int(thread_id)
         )
-        # try:
-        #     await message.bot.delete_message(
-        #         chat_id=message.chat.id,
-        #         message_id=(await get_msg_to_delete(user_id=message.from_user.id))
-        #     )
-        # except:
-        #     pass
+        try:
+            await message.bot.delete_message(
+                chat_id=message.chat.id,
+                message_id=(await get_msg_to_delete(user_id=message.from_user.id))
+            )
+        except:
+            pass
 
         await get_template_message(message)
 
@@ -133,11 +133,12 @@ async def make_fast_post(callback: types.CallbackQuery, state: FSMContext):
             thread_id=data_state["thread_id"],
             message_id=data_state["message_post_id"],
             user_id=callback.from_user.id,
+            reply_markup=data_state["reply_markup"],
             bot=callback.bot
         )
     )
     await callback.message.delete()
-    await callback.message.answer(
-        text="Пост скоро опубликуется.",
-        reply_markup=button_menu()
-    )
+    # await callback.message.answer(
+    #     text="Пост скоро опубликуется.",
+    #     reply_markup=button_menu()
+    # )

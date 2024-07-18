@@ -35,6 +35,8 @@ async def show_plan_post(callback: types.CallbackQuery):
     job: Job = BOT_SCHEDULER.get_job(post.task_id)
 
     reply_markup = post.reply_markup
+    if reply_markup == "None":
+        reply_markup = None
 
     if reply_markup:
 
@@ -50,18 +52,20 @@ async def show_plan_post(callback: types.CallbackQuery):
     await callback.message.answer(
         text=f"Вот запланированный пост👆\n\n"
              f"Название канала: {post.channel_name}\n"
-             f"Время поста: {job.next_run_time}\n"
+             f"Время поста: {job.next_run_time.strftime("%Y-%m-%d %H:%M")}\n"
              f"<i><b>Чтобы отменить пост, нажмите кнопку ниже.</b></i>",
         reply_markup=cancel_plan_post_key(post)
     )
 
 
 @router.callback_query(F.data.startswith("cancel_sp_"))
-async def cancel_plan_post_key(callback: types.CallbackQuery):
+async def cancel_plan_post(callback: types.CallbackQuery):
 
     post_id = callback.data.split("_")[-1]
     post: TasksPosts = TasksPosts.get(id=post_id)
+
     await delete_task(int(post_id))
+    BOT_SCHEDULER.remove_job(post.task_id)
 
     if post.user_id != callback.from_user.id:
 

@@ -47,10 +47,10 @@ async def get_thread_id_message(
         reply_markup=button_menu()
     )
 
-    # await set_msg_to_delete(
-    #     user_id=message.from_user.id,
-    #     message_id=mes_.message_id
-    # )
+    await set_msg_to_delete(
+        user_id=message.from_user.id,
+        message_id=mes_.message_id
+    )
 
 
 async def get_template_message(message: types.Message):
@@ -68,16 +68,16 @@ async def get_time_public_post_message(message: types.Message):
         reply_markup=select_time_post()
     )
 
-
+3
 
 async def list_posts_main(message: types.Message, posts: list[TasksPosts]):
 
-    text = "Список запланированных постов (время | канал)"
+    text = "Список запланированных постов (время | канал)\n"
 
     for index, post in enumerate(posts, start=1):
 
-        task: Job = BOT_SCHEDULER.get(post.task_id)
-        text += f"{index}. {task.next_run_time} | {post.channel_name}\n"
+        task: Job = BOT_SCHEDULER.get_job(post.task_id)
+        text += f"{index}. {task.next_run_time.strftime("%Y-%m-%d %H:%M")} | {post.channel_name}\n"
 
     text += "Для выбора поста нажмите на его номер👇"
 
