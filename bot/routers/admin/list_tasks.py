@@ -52,7 +52,7 @@ async def show_plan_post(callback: types.CallbackQuery):
     await callback.message.answer(
         text=f"Вот запланированный пост👆\n\n"
              f"Название канала: {post.channel_name}\n"
-             f"Время поста: {job.next_run_time.strftime("%Y-%m-%d %H:%M")}\n"
+             f"Время поста: {job.next_run_time.strftime('%Y-%m-%d %H:%M')}\n"
              f"<i><b>Чтобы отменить пост, нажмите кнопку ниже.</b></i>",
         reply_markup=cancel_plan_post_key(post)
     )

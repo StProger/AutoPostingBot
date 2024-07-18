@@ -77,7 +77,7 @@ async def list_posts_main(message: types.Message, posts: list[TasksPosts]):
     for index, post in enumerate(posts, start=1):
 
         task: Job = BOT_SCHEDULER.get_job(post.task_id)
-        text += f"{index}. {task.next_run_time.strftime("%Y-%m-%d %H:%M")} | {post.channel_name}\n"
+        text += f"{index}. {task.next_run_time.strftime('%Y-%m-%d %H:%M')} | {post.channel_name}\n"
 
     text += "Для выбора поста нажмите на его номер👇"
 
