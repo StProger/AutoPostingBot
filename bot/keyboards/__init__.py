@@ -21,7 +21,7 @@ def button_menu():
     )
 
 
-def get_menu_key():
+def get_menu_key(bot_username):
 
     return types.InlineKeyboardMarkup(
             inline_keyboard=[
@@ -36,6 +36,11 @@ def get_menu_key():
                 [
                     types.InlineKeyboardButton(
                         text="Запланированные посты",callback_data="get_plan_posts"
+                    )
+                ],
+                [
+                    types.InlineKeyboardButton(
+                        text="👉 Добавить бота в группу (чат)", url=f"https://t.me/{bot_username}?startgroup=true"
                     )
                 ]
             ]

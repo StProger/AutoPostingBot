@@ -1,4 +1,4 @@
-from aiogram import types
+from aiogram import types, Bot
 from apscheduler.job import Job
 
 from bot.database.models.groups import Groups
@@ -9,11 +9,13 @@ from bot.service.redis_serv.user import set_msg_to_delete
 from bot.settings import BOT_SCHEDULER
 
 
-async def start_message(message: types.Message):
+async def start_message(message: types.Message, bot: Bot):
+
+    bot_info = await bot.get_me()
 
     await message.answer(
         text="Главное меню",
-        reply_markup=get_menu_key()
+        reply_markup=get_menu_key(bot_info.username)
     )
 
 

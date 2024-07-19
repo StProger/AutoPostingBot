@@ -11,7 +11,7 @@ router = Router()
 async def start_handler(message: types.Message, state: FSMContext):
 
     await state.clear()
-    await start_message(message)
+    await start_message(message, message.bot)
 
 
 @router.callback_query(F.data == "menu")
@@ -19,4 +19,4 @@ async def menu_callback(callback: types.CallbackQuery, state: FSMContext):
 
     await state.clear()
     await callback.message.delete()
-    await start_message(callback.message)
+    await start_message(callback.message, callback.bot)
