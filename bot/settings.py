@@ -1,3 +1,4 @@
+from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from dotenv import load_dotenv
@@ -5,6 +6,8 @@ from dotenv import load_dotenv
 import os, json
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.jobstores.redis import RedisJobStore
+from apscheduler_di import ContextSchedulerDecorator
 from yarl import URL
 
 load_dotenv()
@@ -26,6 +29,8 @@ class Settings(BaseSettings):
 
     ADMIN_IDS: list[int] = json.loads(os.getenv("ADMIN_IDS"))
 
+
+
     model_config = SettingsConfigDict(env_file='../.env', env_file_encoding='utf-8')
 
     @property
@@ -42,5 +47,11 @@ class Settings(BaseSettings):
         ))
 
 settings = Settings()
-
-BOT_SCHEDULER = AsyncIOScheduler(timezone=settings.BOT_TIMEZONE)
+jobstores = {
+    'default': RedisJobStore(jobs_key='dispatched_trips_jobs',
+                             run_times_key='dispatched_trips_running',
+                             host='localhost',
+                             db=3,
+                             port=6379)
+}
+BOT_SCHEDULER = ContextSchedulerDecorator(AsyncIOScheduler(jobstores=jobstores, timezone=settings.BOT_TIMEZONE))

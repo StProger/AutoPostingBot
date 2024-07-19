@@ -15,5 +15,4 @@ class TasksPosts(BaseModel):
     channel_id = BigIntegerField()
     thread_id = BigIntegerField(null=True)
     message_id = BigIntegerField()
-    reply_markup = TextField(null=True)
     user_id = BigIntegerField()

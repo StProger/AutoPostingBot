@@ -1,5 +1,4 @@
 import asyncio
-import json
 
 from aiogram import Router, types, F
 from apscheduler.job import Job
@@ -34,13 +33,8 @@ async def show_plan_post(callback: types.CallbackQuery):
 
     job: Job = BOT_SCHEDULER.get_job(post.task_id)
 
-    reply_markup = post.reply_markup
-    if reply_markup == "None":
-        reply_markup = None
+    reply_markup = job.kwargs["reply_markup"]
 
-    if reply_markup:
-
-        reply_markup = json.loads(reply_markup)
 
     await callback.bot.copy_message(
         chat_id=callback.from_user.id,

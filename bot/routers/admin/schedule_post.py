@@ -172,7 +172,6 @@ async def make_plan_post(callback: types.CallbackQuery, state: FSMContext):
         data_state["group_id"],
         data_state["thread_id"],
         data_state["message_post_id"],
-        str(data_state["reply_markup"]),
         callback.from_user.id
     )
 
@@ -181,16 +180,16 @@ async def make_plan_post(callback: types.CallbackQuery, state: FSMContext):
         trigger="date",
         run_date=data_state["run_date"],
         next_run_time=data_state["run_date"],
-        args=(
-            data_state["group_name"],
-            data_state["group_id"],
-            data_state["thread_id"],
-            data_state["message_post_id"],
-            data_state["reply_markup"],
-            callback.from_user.id,
-            callback.bot,
-            new_task
-        )
+        kwargs={
+            'channel_name': data_state["group_name"],
+            'channel_id': data_state["group_id"],
+            'thread_id': data_state["thread_id"],
+            'message_id': data_state["message_post_id"],
+            'reply_markup': data_state["reply_markup"],
+            'user_id': callback.from_user.id,
+            'job_id_db': new_task
+        }
+
     )
 
     await update_task(new_task, new_post_job.id)

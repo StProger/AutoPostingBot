@@ -38,7 +38,6 @@ async def add_task(
         channel_id,
         thread_id,
         message_id,
-        reply_markup,
         user_id
 ):
 
@@ -47,7 +46,6 @@ async def add_task(
         channel_id=channel_id,
         thread_id=thread_id,
         message_id=message_id,
-        reply_markup=reply_markup,
         user_id=user_id
     )
     return query.execute()
