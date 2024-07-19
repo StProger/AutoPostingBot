@@ -94,13 +94,13 @@ async def accept_fast_post(message: types.Message, state: FSMContext):
     data_state = await state.get_data()
     await state.update_data(
         message_post_id=message.message_id,
-        reply_markup=message.reply_markup.dict() if message.reply_markup else None
+        reply_markup=message.reply_markup.model_dump() if message.reply_markup else None
     )
     await message.bot.copy_message(
         chat_id=message.chat.id,
         from_chat_id=message.chat.id,
         message_id=message.message_id,
-        reply_markup=message.reply_markup.dict() if message.reply_markup else None
+        reply_markup=message.reply_markup.model_dump() if message.reply_markup else None
     )
 
     await message.answer(
