@@ -19,3 +19,13 @@ router.my_chat_member.filter(F.chat.type.in_({"group", "supergroup"}))
 async def bot_added_as_admin(event: ChatMemberUpdated):
     print("Зашёл")
     await add_group_to_db(group_name=event.chat.title, group_id=event.chat.id)
+
+@router.my_chat_member(
+    ChatMemberUpdatedFilter(
+        member_status_changed=IS_NOT_MEMBER >> MEMBER
+    ),
+    StateFilter("*")
+)
+async def bot_added_as_admin(event: ChatMemberUpdated):
+    print("Зашёл")
+    await add_group_to_db(group_name=event.chat.title, group_id=event.chat.id)
