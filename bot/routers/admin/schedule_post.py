@@ -192,6 +192,8 @@ async def make_plan_post(callback: types.CallbackQuery, state: FSMContext):
 
     )
 
+    print(new_post_job.next_run_time)
+
     await update_task(new_task, new_post_job.id)
 
     await state.clear()
