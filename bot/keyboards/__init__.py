@@ -40,7 +40,7 @@ def get_menu_key(bot_username):
                 ],
                 [
                     types.InlineKeyboardButton(
-                        text="👉 Добавить бота в группу (чат)", url=f"https://t.me/{bot_username}?startgroup=true"
+                        text="👉 Добавить бота в группу (чат)", url=f"https://t.me/{bot_username}?startgroup=invite"
                     )
                 ]
             ]
