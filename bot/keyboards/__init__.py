@@ -38,11 +38,11 @@ def get_menu_key(bot_username):
                         text="Запланированные посты",callback_data="get_plan_posts"
                     )
                 ],
-                [
-                    types.InlineKeyboardButton(
-                        text="👉 Добавить бота в группу (чат)", url=f"https://t.me/{bot_username}?startgroup=invite"
-                    )
-                ]
+                # [
+                #     types.InlineKeyboardButton(
+                #         text="👉 Добавить бота в группу (чат)", url=f"https://t.me/{bot_username}?group=true"
+                #     )
+                # ]
             ]
         )
 
