@@ -19,7 +19,6 @@ import asyncio
 
 async def main():
 
-    print(settings.fsm_redis_url)
     storage = RedisStorage.from_url(settings.fsm_redis_url)
 
     dp = Dispatcher(storage=storage)

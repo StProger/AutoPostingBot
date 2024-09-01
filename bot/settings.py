@@ -43,7 +43,6 @@ class Settings(BaseSettings):
         return str(URL.build(
             scheme="redis",
             host=self.FSM_REDIS_HOST,
-            port=6378,
             path="/" + str(self.FSM_REDIS_DB)
         ))
 
@@ -53,6 +52,6 @@ jobstores = {
                              run_times_key='dispatched_trips_running',
                              host='localhost',
                              db=3,
-                             port=6378)
+                             port=6379)
 }
 BOT_SCHEDULER = ContextSchedulerDecorator(AsyncIOScheduler(jobstores=jobstores, timezone=settings.BOT_TIMEZONE))
