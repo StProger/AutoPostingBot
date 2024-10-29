@@ -82,6 +82,7 @@ async def list_posts_main(message: types.Message, posts: list[TasksPosts]):
         task: Job = BOT_SCHEDULER.get_job(post.task_id)
         if not task:
             await delete_task(task_id=post.id)
+            continue
         text += f"{index}. {task.next_run_time.strftime('%Y-%m-%d %H:%M')} | {post.channel_name}\n"
 
     text += "Для выбора поста нажмите на его номер👇"
