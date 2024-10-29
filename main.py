@@ -34,7 +34,6 @@ async def main():
     await logging.setup()
 
     BOT_SCHEDULER.start()
-
     try:
 
         await dp.start_polling(bot)

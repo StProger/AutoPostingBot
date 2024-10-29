@@ -3,6 +3,7 @@ from apscheduler.job import Job
 
 from bot.database.models.groups import Groups
 from bot.database.models.tasks_posts import TasksPosts
+from bot.database.api import delete_task
 from bot.keyboards import get_menu_key, get_fast_post_choose_channel_key, get_fast_post_thread_id_key, button_menu, \
     select_time_post, lists_posts_key
 from bot.service.redis_serv.user import set_msg_to_delete
@@ -70,7 +71,7 @@ async def get_time_public_post_message(message: types.Message):
         reply_markup=select_time_post()
     )
 
-3
+
 
 async def list_posts_main(message: types.Message, posts: list[TasksPosts]):
 
@@ -79,6 +80,8 @@ async def list_posts_main(message: types.Message, posts: list[TasksPosts]):
     for index, post in enumerate(posts, start=1):
 
         task: Job = BOT_SCHEDULER.get_job(post.task_id)
+        if not task:
+            await delete_task(task_id=post.id)
         text += f"{index}. {task.next_run_time.strftime('%Y-%m-%d %H:%M')} | {post.channel_name}\n"
 
     text += "Для выбора поста нажмите на его номер👇"
