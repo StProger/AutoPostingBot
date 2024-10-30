@@ -54,4 +54,4 @@ jobstores = {
                              db=3,
                              port=6379)
 }
-BOT_SCHEDULER = ContextSchedulerDecorator(AsyncIOScheduler(jobstores=jobstores, timezone=settings.BOT_TIMEZONE))
+BOT_SCHEDULER = AsyncIOScheduler(jobstores=jobstores, timezone=settings.BOT_TIMEZONE)

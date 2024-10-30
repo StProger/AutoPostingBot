@@ -72,7 +72,6 @@ async def get_time_public_post_message(message: types.Message):
     )
 
 
-
 async def list_posts_main(message: types.Message, posts: list[TasksPosts]):
 
     text = "Список запланированных постов (время | канал)\n"
@@ -83,10 +82,10 @@ async def list_posts_main(message: types.Message, posts: list[TasksPosts]):
         if not task:
             await delete_task(task_id=post.id)
             continue
+
         text += f"{index}. {task.next_run_time.strftime('%Y-%m-%d %H:%M')} | {post.channel_name}\n"
-
     text += "Для выбора поста нажмите на его номер👇"
-
+    posts = TasksPosts.select()
     await message.answer(
         text=text,
         reply_markup=lists_posts_key(posts)

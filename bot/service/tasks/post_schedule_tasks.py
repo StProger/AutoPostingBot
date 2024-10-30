@@ -1,6 +1,7 @@
 from aiogram import Bot
 
 from bot.database.models.tasks_posts import TasksPosts
+from bot.settings import settings
 
 
 async def post_schedule_task(
@@ -10,9 +11,10 @@ async def post_schedule_task(
         message_id: int,
         reply_markup,
         user_id: int,
-        bot: Bot,
         job_id_db: int
 ):
+
+    bot = Bot(token=settings.BOT_TOKEN)
 
     try:
 
@@ -50,3 +52,5 @@ async def post_schedule_task(
                  f"Убедитесь, что бот есть в группе и вы не удаляли свой пост из диалога с ботом.",
             chat_id=user_id
         )
+    finally:
+        await bot.session.close()
