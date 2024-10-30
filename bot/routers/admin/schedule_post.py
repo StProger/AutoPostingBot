@@ -113,7 +113,7 @@ async def get_template_post(callback: types.CallbackQuery, state: FSMContext):
         await callback.answer("Вы не выбрали время.")
         return
 
-    date = (datetime.now(pytz.timezone('Europe/Moscow')) + timedelta(hours=selected_time)).strftime('%Y-%m-%d %H:%M:%S')
+    date = (datetime.now(pytz.timezone('Europe/Moscow')) + timedelta(minutes=selected_time)).strftime('%Y-%m-%d %H:%M:%S')
 
     await state.update_data(
         run_date=date

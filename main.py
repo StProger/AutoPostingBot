@@ -27,7 +27,7 @@ async def main():
     # dp.callback_query.filter(IsAdmin())
 
     bot = Bot(settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML", link_preview_is_disabled=True))
-    BOT_SCHEDULER.ctx.add_instance(bot, declared_class=Bot)
+    # BOT_SCHEDULER.ctx.add_instance(bot, declared_class=Bot)
     init_filters(dp)
     register_all_routers(dp)
     await bot.delete_webhook(drop_pending_updates=True)
